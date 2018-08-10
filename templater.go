@@ -135,6 +135,7 @@ func refactorNames(destFolder, destPkg, msName, msDesc string) error {
 	escapedSeedmsPkg := escape(seedmsPkg, "/", "\\")
 	escapedDestPkg := escape(destPkg, "/", "\\")
 
+	os.Setenv("LC_CTYPE", "C")
 	return filepath.Walk(destFolder, func(fName string, info os.FileInfo, err error) error {
 
 		if err != nil {
@@ -145,21 +146,21 @@ func refactorNames(destFolder, destPkg, msName, msDesc string) error {
 		}
 
 		rplcPKGCmd := fmt.Sprintf("s/%s/%s/g", escapedSeedmsPkg, escapedDestPkg)
-		cmd := exec.Command("sed", "-i", rplcPKGCmd, fName)
+		cmd := exec.Command("sed", "-i", "", rplcPKGCmd, fName)
 		if out, err := cmd.CombinedOutput(); err != nil {
 			return fmt.Errorf("replace package name in %s: %s: %v",
 				fName, out, err)
 		}
 
 		rplcDescCmd := fmt.Sprintf("s/%s/%s/g", seedmsDescription, msDesc)
-		cmd = exec.Command("sed", "-i", rplcDescCmd, fName)
+		cmd = exec.Command("sed", "-i", "", rplcDescCmd, fName)
 		if out, err := cmd.CombinedOutput(); err != nil {
 			return fmt.Errorf("replace micro-service description in %s: %s: %v",
 				fName, out, err)
 		}
 
 		rplcNameCmd := fmt.Sprintf("s/%s/%s/g", seedms, msName)
-		cmd = exec.Command("sed", "-i", rplcNameCmd, fName)
+		cmd = exec.Command("sed", "-i", "", rplcNameCmd, fName)
 		if out, err := cmd.CombinedOutput(); err != nil {
 			return fmt.Errorf("replace micro-service name in %s: %s: %v",
 				fName, out, err)
